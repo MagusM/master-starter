@@ -1,13 +1,16 @@
 import prompts from "prompts";
-import { execSync, execSync as exec } from "child_process";
-import fs from "fs";
-import path from "path";
+import {execSync} from "child_process";
+
+import {cleanupDefaultFiles} from "./scripts/cleanup.js";
+import {createFolderStructure} from "./scripts/folderStructure.js";
+import {setupEnvFile} from "./scripts/envSetup.js";
+import {setupReadme} from "./scripts/readmeSetup.js";
+import {setupTailwind} from "./scripts/tailwindSetup.js";
+import {installDependencies} from "./scripts/installDeps.js";
 
 async function setupProject() {
-  // Get project path from CLI arguments or use current directory
   const projectPath = process.argv[2] || "./tmp_nextjs_master_project";
 
-  // Prompt user for project configurations
   const response = await prompts([
     {
       type: "select",
@@ -77,34 +80,27 @@ async function setupProject() {
 
   // Step 1: Create Next.js App
   const createCmd = `CI=true ${response.packageManager} create next-app@latest ${projectPath} --ts --eslint --no-tailwind --no-src-dir --no-experimental-app`;
-  exec(createCmd, { stdio: "inherit" });
+  execSync(createCmd, { stdio: "inherit" });
 
   process.chdir(projectPath);
 
-  // Step 2: Remove default files
-  console.log("🧹 Cleaning up default Next.js files...");
-  fs.rmSync("src", { recursive: true, force: true });
-  fs.rmSync("pages", { recursive: true, force: true });
+  // Step 2: Clean up default files
+  cleanupDefaultFiles();
 
-  // Step 3: Create new folder structure
-  const baseFolders = ["src/components", "src/utils", "src/actions", "src/lib", "src/hooks", "src/styles"];
-  baseFolders.forEach((folder) => fs.mkdirSync(folder, { recursive: true }));
+  // Step 3: Create a clean folder structure
+  createFolderStructure(response.router);
 
-  // Create app/pages structure
-  if (response.router === "app") {
-    fs.mkdirSync("src/app", { recursive: true });
-    fs.writeFileSync("src/app/layout.tsx", "export default function Layout({ children }) { return <>{children}</>; }");
-    fs.writeFileSync("src/app/page.tsx", "export default function Page() { return <h1>Home</h1>; }");
-  } else {
-    fs.mkdirSync("pages", { recursive: true });
-    fs.writeFileSync("pages/index.tsx", "export default function Home() { return <h1>Home</h1>; }");
-  }
+  // Step 4: Install dependencies
+  installDependencies(response);
 
-  // Step 4: Generate README
-  fs.writeFileSync("README.md", "# Next.js Starter Kit\n\n## 🚀 Getting Started\n\n```sh\nnpm run dev\n```\n");
+  // Step 5: Set up Tailwind (if selected)
+  if (response.tailwind) setupTailwind(response.packageManager);
 
-  // Step 5: Generate .env.local
-  fs.writeFileSync(".env.local", "DATABASE_URL=\nNEXT_PUBLIC_API_URL=\n");
+  // Step 6: Generate environment variables file
+  setupEnvFile(response.database, response.orm);
+
+  // Step 7: Create README.md
+  setupReadme();
 
   console.log("\n✅ Setup Complete!");
   console.log(`\nNext Steps:\n`);

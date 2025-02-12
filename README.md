@@ -1,6 +1,14 @@
-# This is a starter project kit - Master Starter
+# 🚀 Master Starter - Next.js Starter Project Kit
 
-## for App Router (src/app)
+A **state-of-the-art** starter kit for **Next.js** projects, supporting both **App Router** and **Page Router**, with a clean structure, best practices, and essential utilities.
+
+---
+
+## 📦 **Project Structure**
+This kit provides **two different folder structures** based on your **routing choice**:
+
+### **🔹 For App Router (`src/app/`)**
+```bash
 my-project/
 │── src/
 │   ├── app/
@@ -28,8 +36,9 @@ my-project/
 │── README.md                   # Cleaned starter guide
 │── package.json
 │── next.config.js
-
-## For Page Router (pages/)
+```
+### **🔹 For Page Router (`pages/`)**
+```bash
 my-project/
 │── pages/
 │   ├── index.tsx             # Home page
@@ -56,3 +65,45 @@ my-project/
 │── README.md
 │── package.json
 │── next.config.js
+```
+---
+
+## 🛠️ **Features**
+✅ **Supports both App Router (`src/app`) and Page Router (`pages/`)**  
+✅ **Includes database setup** (SQL with Drizzle/Prisma, or MongoDB with Mongoose)  
+✅ **Auto-installs dependencies** (TailwindCSS, Clerk, Framer Motion, ShadCN, etc.)  
+✅ **Pre-configured `.env.local` file** for environment variables  
+✅ **Best practice folder structure** for **components, utils, actions, hooks, and styles**  
+✅ **Auto-cleans default Next.js files** to maintain a clean setup  
+✅ **Easy setup and configuration** via CLI
+
+---
+
+## 🚀 **Installation**
+### **1️⃣ Clone this repo**
+```sh
+git clone https://github.com/YOUR_GITHUB_USERNAME/master-starter.git
+cd master-starter
+---
+
+## 🛠️ **Features**
+✅ **Supports both App Router (`src/app`) and Page Router (`pages/`)**  
+✅ **Includes database setup** (SQL with Drizzle/Prisma, or MongoDB with Mongoose)  
+✅ **Auto-installs dependencies** (TailwindCSS, Clerk, Framer Motion, ShadCN, etc.)  
+✅ **Pre-configured `.env.local` file** for environment variables  
+✅ **Best practice folder structure** for **components, utils, actions, hooks, and styles**  
+✅ **Auto-cleans default Next.js files** to maintain a clean setup  
+✅ **Easy setup and configuration** via CLI  
+
+---
+
+## 🚀 **Installation**
+### **1️⃣ Clone this repo**
+
+```bash
+git clone https://github.com/YOUR_GITHUB_USERNAME/master-starter.git
+cd master-starter
+bun run create my-new-project (or equivalent)
+cd my-new-project
+bun run dev  # or npm run dev / yarn run dev / pnpm run dev
+```

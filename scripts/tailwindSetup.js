@@ -5,39 +5,46 @@ export function setupTailwind(packageManager) {
   console.log("🎨 Setting up Tailwind CSS...");
 
   try {
-    // Try to initialize Tailwind normally
-    execSync("npx tailwindcss init -p", { stdio: "inherit" });
-  } catch (error) {
-    console.log("⚠️ Failed to run npx. Trying package manager-specific installation...");
+    console.log(`📦 Installing Tailwind CSS with ${packageManager}...`);
+    execSync(`${packageManager} add -D tailwindcss postcss autoprefixer`, { stdio: "inherit" });
 
-    // Use package manager-specific fallback
+    let tailwindInitCmd;
+
+    // ✅ Fix for Bun: Directly use the local Tailwind CLI binary
     if (packageManager === "bun") {
-      try {
-        execSync("bunx tailwindcss init -p", { stdio: "inherit" });
-      } catch (err) {
-        console.log("⚠️ Bun failed. Creating Tailwind config manually...");
-      }
+      tailwindInitCmd = "./node_modules/.bin/tailwindcss init -p";
+    } else if (packageManager === "pnpm") {
+      tailwindInitCmd = "pnpm dlx tailwindcss init -p";
+    } else if (packageManager === "yarn") {
+      tailwindInitCmd = "yarn dlx tailwindcss init -p";
     } else {
-      try {
-        execSync(`${packageManager} dlx tailwindcss init -p`, { stdio: "inherit" });
-      } catch (err) {
-        console.log("⚠️ Failed to install Tailwind CLI. Creating Tailwind config manually...");
-      }
+      tailwindInitCmd = "npx tailwindcss init -p";
     }
-  }
 
-  // Ensure Tailwind config file exists
-  if (!fs.existsSync("tailwind.config.js")) {
-    fs.writeFileSync(
-      "tailwind.config.js",
-      `export default { content: ["./src/**/*.{js,ts,jsx,tsx}"], theme: { extend: {} }, plugins: [] };`
-    );
+    console.log(`🔧 Running: ${tailwindInitCmd}`);
+    execSync(tailwindInitCmd, { stdio: "inherit", shell: true });
+  } catch (error) {
+    console.log("⚠️ Tailwind CLI initialization failed. Creating Tailwind config manually...");
+
+    // Ensure Tailwind config file exists
+    if (!fs.existsSync("tailwind.config.js")) {
+      fs.writeFileSync(
+        "tailwind.config.js",
+        `export default {
+  content: ["./src/**/*.{js,ts,jsx,tsx}"],
+  theme: { extend: {} },
+  plugins: []
+};`
+      );
+      console.log("✅ Created default tailwind.config.js");
+    }
   }
 
   // Ensure global styles exist
   if (!fs.existsSync("src/styles/globals.css")) {
     fs.mkdirSync("src/styles", { recursive: true });
     fs.writeFileSync("src/styles/globals.css", `@tailwind base;\n@tailwind components;\n@tailwind utilities;`);
+    console.log("✅ Created src/styles/globals.css");
   }
 
   console.log("✅ Tailwind CSS setup complete.");
